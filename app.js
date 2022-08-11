@@ -98,21 +98,28 @@ const deleteTour = (req, res) => {
 };
 
 //handling GET request
-app.get('/api/v1/tours', getAlTours);
+// app.get('/api/v1/tours', getAlTours);
 
 //handling POST request
-app.post('/api/v1/tours', createTour);
+// app.post('/api/v1/tours', createTour);
 
 // responding paramater
-app.get('/api/v1/tours/:id', getTour);
+// app.get('/api/v1/tours/:id', getTour);
 
 //handling PATCH request
-app.patch('/api/v1/tours/:id', updateTour);
+// app.patch('/api/v1/tours/:id', updateTour);
 //handling PUT request
-app.put('/api/v1/tours/:id', updateTour);
+// app.put('/api/v1/tours/:id', updateTour);
 
 //handling DELETE request
-app.delete('/api/v1/tours/:id', deleteTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours').get(getAllTour).post(createTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 const port = 3000;
 app.listen(port, () => console.log(`App running on port ${port}`));
