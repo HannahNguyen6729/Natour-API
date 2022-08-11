@@ -8,6 +8,15 @@ const app = express();
 //1.MIDDLEWARE
 // app.use(morgan('dev'));
 app.use(express.json());
+//define a middleware
+app.use((req, res, next) => {
+  console.log('hi from middleware');
+  next();
+});
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 // app.get('/', (req, res) => {
 //   //res.status(200).send('Hello from the server side 123');
@@ -23,10 +32,11 @@ app.use(express.json());
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
-const getAlTours = (req, res) => {
+const getAllTours = (req, res) => {
   //non-blocking code-- asynchronous
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     data: {
       tours: tours,
@@ -114,7 +124,7 @@ const deleteTour = (req, res) => {
 //handling DELETE request
 // app.delete('/api/v1/tours/:id', deleteTour);
 
-app.route('/api/v1/tours').get(getAllTour).post(createTour);
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
 app
   .route('/api/v1/tours/:id')
   .get(getTour)
