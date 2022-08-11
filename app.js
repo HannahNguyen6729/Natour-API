@@ -23,9 +23,7 @@ app.use(express.json());
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
-
-//handling GET request
-app.get('/api/v1/tours', (req, res) => {
+const getAlTours = (req, res) => {
   //non-blocking code-- asynchronous
   res.status(200).json({
     status: 'success',
@@ -34,10 +32,24 @@ app.get('/api/v1/tours', (req, res) => {
       tours: tours,
     },
   });
-});
+};
+const getTour = (req, res) => {
+  console.log(req.params);
 
-//handling POST request
-app.post('/api/v1/tours', (req, res) => {
+  const tour = tours.find((item) => item.id === req.params.id * 1);
+  console.log(tour);
+  if (!tour) {
+    return res.status(404).json({
+      status: '404 Not Found',
+      message: 'invalid ID',
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+  });
+};
+
+const createTour = (req, res) => {
   //console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
   //Object.assign(obj1, obj2) : merge 2 obj
@@ -56,27 +68,8 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
-
-// responding paramater
-app.get('/api/v1/tours/:id', (req, res) => {
-  console.log(req.params);
-
-  const tour = tours.find((item) => item.id === req.params.id * 1);
-  console.log(tour);
-  if (!tour) {
-    return res.status(404).json({
-      status: '404 Not Found',
-      message: 'invalid ID',
-    });
-  }
-  res.status(200).json({
-    status: 'success',
-  });
-});
-
-//handling PATCH request
-app.patch('/api/v1/tours/:id', (req, res) => {
+};
+const updateTour = (req, res) => {
   if (req.params.id > tours.length) {
     return res.status(404).json({
       status: '404 Not Found',
@@ -89,25 +82,8 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: '<updated tour here>',
     },
   });
-});
-//handling PUT request
-app.put('/api/v1/tours/:id', (req, res) => {
-  if (req.params.id > tours.length) {
-    return res.status(404).json({
-      status: '404 Not Found',
-      message: 'invalid ID',
-    });
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<updated tour here>',
-    },
-  });
-});
-
-//handling DELETE request
-app.delete('/api/v1/tours/:id', (req, res) => {
+};
+const deleteTour = (req, res) => {
   if (req.params.id > tours.length) {
     return res.status(404).json({
       status: '404 Not Found',
@@ -119,7 +95,24 @@ app.delete('/api/v1/tours/:id', (req, res) => {
     status: 'success',
     data: null,
   });
-});
+};
+
+//handling GET request
+app.get('/api/v1/tours', getAlTours);
+
+//handling POST request
+app.post('/api/v1/tours', createTour);
+
+// responding paramater
+app.get('/api/v1/tours/:id', getTour);
+
+//handling PATCH request
+app.patch('/api/v1/tours/:id', updateTour);
+//handling PUT request
+app.put('/api/v1/tours/:id', updateTour);
+
+//handling DELETE request
+app.delete('/api/v1/tours/:id', deleteTour);
 
 const port = 3000;
 app.listen(port, () => console.log(`App running on port ${port}`));
